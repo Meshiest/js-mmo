@@ -380,18 +380,18 @@ function renderGame() {
         vecToDir(thing.lastDir, deg),
         x, y);
 
-        ctx.font = 'small-caps bold 13px helvetica';
-        // I like Palatino, helvetica, and monospace
-        ctx.lineWidth = 2;
-        //ctx.strokeStyle = '#fff';
-        //ctx.fillStyle = '#000';
-        ctx.strokeStyle = '#000';
-        ctx.fillStyle = '#fff';
-        ctx.textBaseline = 'bottom';
-        ctx.textAlign = 'center';
+      ctx.font = 'small-caps bold 13px helvetica';
+      // I like Palatino, helvetica, and monospace
+      ctx.lineWidth = 2;
+      //ctx.strokeStyle = '#fff';
+      //ctx.fillStyle = '#000';
+      ctx.strokeStyle = '#000';
+      ctx.fillStyle = '#fff';
+      ctx.textBaseline = 'bottom';
+      ctx.textAlign = 'center';
 
-        ctx.strokeText(thing.name, x, y - 48);
-        ctx.fillText(thing.name, x, y - 48);
+      ctx.strokeText(thing.name, x, y - 48);
+      ctx.fillText(thing.name, x, y - 48);
     } else {
       drawTile(ctx, tileset, tile,
         thing.width, thing.height,
