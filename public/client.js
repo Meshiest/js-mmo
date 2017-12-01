@@ -76,8 +76,8 @@ ws.onopen = () => {
 let players = {};
 
 ws.on('transform', json => {
-  players[json.id].x = json.pos.x;
-  players[json.id].y = json.pos.y;
+  players[json.id].goalX = json.pos.x;
+  players[json.id].goalY = json.pos.y;
   players[json.id].vel = json.vel;
   players[json.id].lastDir = json.lastDir;
 });
@@ -90,7 +90,9 @@ ws.on('connection', json => {
   console.log(json);
   let p = players[json.id] = {
     x: json.pos.x,
+    goalX: json.pos.x,
     y: json.pos.y,
+    goalY: json.pos.y,
     name: json.name,
     vel: json.vel,
     lastDir: json.lastDir,
@@ -166,7 +168,7 @@ function genMap() {
 function resizeContext() {
   return {
     width: ctx.canvas.width = canvas.clientWidth,
-    height:  ctx.canvas.height = canvas.clientHeight,
+    height: ctx.canvas.height = canvas.clientHeight,
   };
 }
 
@@ -291,6 +293,8 @@ function renderGame() {
 
   for(let id in players) {
     let p = players[id];
+    p.x += (p.goalX - p.x) * delta * 10;
+    p.y += (p.goalY - p.y) * delta * 10;
     if(Math.hypot(p.vel.x, p.vel.y)) {
       p.frame += Math.hypot(p.vel.x, p.vel.y) / 20 * delta;
     } else {
