@@ -1,12 +1,14 @@
 const express = require('express');
 const WebSocket = require('ws');
+const http = require('http');
+
 let app = express();
-let http = require('http').Server(app);
-let wss = new WebSocket.Server({server: http});
+let server = http.Server(app);
+let wss = new WebSocket.Server({server: server});
 
 const PORT = 3000;
 
-app.use(express.static('public'))
+app.use(express.static('public'));
 app.get('/', (req, res) => {
   res.sendFile(__dirname + 'public/index.html');
 });
@@ -26,7 +28,7 @@ WebSocket.prototype.$broadcast = function(type, json) {
 let players = {};
 let ids = 0;
 
-wss.on('connection', (ws, req) => {
+wss.on('connection', ws => {
   let id = ids++;
   let player = players[id] = {
     pos: {x: 0, y: 0},
@@ -65,6 +67,7 @@ wss.on('connection', (ws, req) => {
   ws.on('message', msg => {
     try {
       let { json, type } = JSON.parse(msg);
+
       switch(type) {
       case 'transform':
         let { pos, vel, lastDir } = json;
@@ -87,6 +90,6 @@ wss.on('connection', (ws, req) => {
   });
 });
 
-http.listen(process.env.PORT || PORT, () => {
+server.listen(process.env.PORT || PORT, () => {
   console.log('Listening on *:', PORT);
 });

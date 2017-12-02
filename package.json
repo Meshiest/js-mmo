@@ -4,8 +4,8 @@
   "description": "",
   "main": "client.js",
   "scripts": {
-    "start": "node index.js",
-    "server": "node index.js",
+    "start": "node --experimental-modules index.js",
+    "server": "node --experimental-modules index.js",
     "build": "brunch b"
   },
   "author": "Meshiest",
@@ -13,6 +13,7 @@
   "dependencies": {
     "autoprefixer": "^7.1.6",
     "babel-brunch": "^6.1.1",
+    "babel-eslint": "^8.0.3",
     "babel-preset-latest": "^6.24.1",
     "brunch": "^2.10.12",
     "express": "^4.16.2",

@@ -1,5 +1,5 @@
 {
-  "extends": "eslint:recommended",
+  "extends": ["eslint:recommended"],
   "env": {
     "es6": true,
     "browser": true
@@ -9,14 +9,22 @@
     "modules": true,
     "emcaVersion": 6
   },
+  "globals": {
+    "require": true,
+    "process": true,
+    "__dirname": true,
+    "module": true
+  },
   "rules": {
     "brace-style": ["warn", "1tbs"],
     "dot-location": ["error", "property"],
     "eqeqeq": ["warn", "always"],
     "indent": ["error", 2],
     "no-console": "off",
+    "no-case-declarations": "off",
     "no-trailing-spaces": "warn",
     "quotes": ["error", "single"],
-    "semi": ["error", "always"]
+    "semi": ["error", "always"],
+    "global-require": "off"
   }
 }

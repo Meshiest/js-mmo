@@ -1,11 +1,5 @@
 let assets = {
   // items: 'assets/bigset.png',
-  //fluidset: 'https://vxresource.files.wordpress.com/2010/03/tilea1.png',
-  //tileset: 'https://vxresource.files.wordpress.com/2010/03/tilea2.png',
-  //groundset: 'http://vxresource.files.wordpress.com/2010/03/tilea5.png',
-  //avatars: 'https://vxresource.files.wordpress.com/2010/03/vx_chara03_d.png',
-  //plants: 'https://vxresource.files.wordpress.com/2010/02/plants2mp1.png',
-  //decorations: 'http://vxresource.files.wordpress.com/2010/03/tileb.png',
   fluidset: 'img/tilea1.png',
   tileset: 'img/tilea2.png',
   groundset: 'img/tilea5.png',
@@ -25,7 +19,7 @@ let pos = {
   y: 0,
   frame: 0,
   type: 'player',
-  name: location.search ? location.search.slice(1) : "Player",
+  name: location.search ? location.search.slice(1) : 'Player',
   lastDir: {x: 0, y: 1}
 };
 
@@ -65,7 +59,7 @@ WebSocket.prototype.handleMessage = function(msg) {
 };
 
 WebSocket.prototype.isOpen = function() {
-  return this.readyState == WebSocket.OPEN;
+  return this.readyState === WebSocket.OPEN;
 };
 
 ws.onmessage = ws.handleMessage.bind(ws);
@@ -111,18 +105,18 @@ ws.on('disconnection', json => {
   delete players[json.id];
 });
 
-function loadGame() {      
+function loadGame() {
   let num = Object.keys(assets).length;
   let loadingDiv = document.createElement('div');
   hud.appendChild(loadingDiv);
   let header = document.createElement('h2');
-  header.innerHTML = "Loading Assets: ";
+  header.innerHTML = 'Loading Assets: ';
   loadingDiv.appendChild(header);
 
   return new Promise(resolve => {
     Object.keys(assets).forEach(key => {
       let img = new Image();
-      let elem = document.createElement("div");
+      let elem = document.createElement('div');
       img.src = assets[key];
       elem.innerHTML = img.src;
       loadingDiv.appendChild(elem);
@@ -182,7 +176,7 @@ function drawTile(ctx, tileset, tile, width, height, x, y) {
     width, height);
   // ctx.textBaseline = "top";
   // ctx.fillText(tile, x, y);
-};
+}
 
 function drawCharacter(ctx, tileset, character, frame, direction, x, y) {
   let charWidth = 32;
@@ -191,8 +185,8 @@ function drawCharacter(ctx, tileset, character, frame, direction, x, y) {
     0: 0, 1: 1, 2: 2, 3: 3,
     'down': 0, 'left': 1, 'right': 2, 'up': 3,
     'south': 0, 'west': 1, 'east': 2, 'north': 3,
-  }
-  frame = frame % 2 == 0 ? 1 : (frame - 1) % 4;
+  };
+  frame = frame % 2 === 0 ? 1 : (frame - 1) % 4;
   let i = character + tileset.width * dirMap[direction] / charWidth + frame;
   drawTile(ctx, tileset, i, charWidth, charHeight, x - charWidth/2, y - charHeight);
 }
@@ -211,11 +205,10 @@ window.addEventListener('keyup', event => {
 
 let previewSize = 600;
 
-let root2over2 = 0.70710678118; // sqrt(2)/2
 function vecToDir(dir, deg) {
   let theta = Math.atan2(dir.y, dir.x) + deg;
   let cos = Math.round(Math.cos(theta)*1000),
-      sin = Math.round(Math.sin(theta)*1000);
+    sin = Math.round(Math.sin(theta)*1000);
   if(Math.abs(cos) >= Math.abs(sin))
     return cos < 0 ? 1 : 2;
   return sin < 0 ? 3 : 0;
@@ -233,12 +226,12 @@ function renderGame() {
 
   // console.time('Resize');
   let { width, height } = resizeContext();
-  // console.timeEnd('Resize');        
+  // console.timeEnd('Resize');
   let time = Date.now();
   let delta = (time - now) / 1000;
   now = time;
 
-  // console.time('Movement');        
+  // console.time('Movement');
   let dir = {x: 0, y: 0};
   if(keys.KeyW)
     dir.y -= 1;
@@ -305,12 +298,11 @@ function renderGame() {
   offset.x -= offset.x * delta * 4;
   offset.y -= offset.y * delta * 4;
 
-  let oldDeg = deg;
-  if(keys.KeyQ) 
+  if(keys.KeyQ)
     deg += delta * Math.PI / 2;
   if(keys.KeyE)
     deg -= delta * Math.PI / 2;
-  // console.timeEnd('Movement');        
+  // console.timeEnd('Movement');
 
   // if(oldDeg != deg || Math.hypot(dir.x, dir.y) > 0) {
   //   // console.time('Sort');
@@ -416,4 +408,4 @@ window.addEventListener('load', () => {
   loadGame().then(() => {
     map = genMap();
   }).then(renderGame);
-})
+});
