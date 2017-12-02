@@ -4,9 +4,10 @@
   "description": "",
   "main": "client.js",
   "scripts": {
-    "start": "node --experimental-modules index.js",
-    "server": "node --experimental-modules index.js",
-    "build": "brunch b"
+    "start": "node index.js",
+    "server": "node index.js",
+    "build": "brunch b -d",
+    "watch": "brunch w -d"
   },
   "author": "Meshiest",
   "license": "ISC",
