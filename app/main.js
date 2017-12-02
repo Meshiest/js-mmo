@@ -330,11 +330,11 @@ function renderGame() {
   // console.time('Things');
   ctx.save();
   things.map(thing => {
-    let y = thing.y * map.height - pos.y;
-    let x = thing.x * map.width - pos.x;
+    let y = thing.y * map.height;
+    let x = thing.x * map.width;
     if(thing.type === 'player') {
-      x = thing.x - pos.x;
-      y = thing.y - pos.y;
+      x = thing.x;
+      y = thing.y;
     }
     thing.order = Math.sin(Math.atan2(y, x) + deg) * Math.hypot(x, y);
     return thing;
@@ -355,7 +355,7 @@ function renderGame() {
         Math.abs(y) > previewSize/2))
       return;
 
-    const fadeRange = 10;
+    const fadeRange = 20;
     if(Math.abs(x) > previewSize/2 - fadeRange ||
         Math.abs(y) > previewSize/2 - fadeRange) {
       ctx.globalAlpha = Math.min(
