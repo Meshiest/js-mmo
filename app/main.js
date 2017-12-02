@@ -6,12 +6,12 @@ let assets = {
   //avatars: 'https://vxresource.files.wordpress.com/2010/03/vx_chara03_d.png',
   //plants: 'https://vxresource.files.wordpress.com/2010/02/plants2mp1.png',
   //decorations: 'http://vxresource.files.wordpress.com/2010/03/tileb.png',
-  fluidset: 'assets/tilea1.png',
-  tileset: 'assets/tilea2.png',
-  groundset: 'assets/tilea5.png',
-  avatars: 'assets/vx_chara03_d.png',
-  plants: 'assets/plants2mp1.png',
-  decorations: 'assets/tileb.png',
+  fluidset: 'img/tilea1.png',
+  tileset: 'img/tilea2.png',
+  groundset: 'img/tilea5.png',
+  avatars: 'img/vx_chara03_d.png',
+  plants: 'img/plants2mp1.png',
+  decorations: 'img/tileb.png',
 };
 
 let canvas = document.getElementById('canvas');
@@ -193,7 +193,7 @@ function drawCharacter(ctx, tileset, character, frame, direction, x, y) {
     'south': 0, 'west': 1, 'east': 2, 'north': 3,
   }
   frame = frame % 2 == 0 ? 1 : (frame - 1) % 4;
-  let i = character * charWidth + tileset.width * dirMap[direction] / charWidth + frame;
+  let i = character + tileset.width * dirMap[direction] / charWidth + frame;
   drawTile(ctx, tileset, i, charWidth, charHeight, x - charWidth/2, y - charHeight);
 }
 
@@ -379,7 +379,7 @@ function renderGame() {
       let y = Math.sin(theta) * hypot * tilt;
       drawCharacter(ctx,
         assets.avatars,
-        0,
+        6,
         Math.floor(thing.frame),
         vecToDir(thing.lastDir, deg),
         x, y);

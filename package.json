@@ -4,12 +4,19 @@
   "description": "",
   "main": "client.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "server": "node index.js",
+    "build": "brunch b"
   },
   "author": "Meshiest",
   "license": "ISC",
   "dependencies": {
+    "autoprefixer": "^7.1.6",
+    "babel-brunch": "^6.1.1",
+    "babel-preset-latest": "^6.24.1",
+    "brunch": "^2.10.12",
     "express": "^4.16.2",
+    "postcss-brunch": "^2.1.0",
     "ws": "^3.3.2"
   }
 }
