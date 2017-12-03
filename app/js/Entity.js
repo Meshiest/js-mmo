@@ -16,5 +16,5 @@ export default class Entity {
 
   // Interface for basic entity implementation
   tick(deltaTime) {}
-  render(ctx, rotation, offset, tilt) {}
+  render(ctx) {}
 }

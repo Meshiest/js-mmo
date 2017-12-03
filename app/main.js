@@ -81,7 +81,6 @@ ws.on('name', json => {
 });
 
 ws.on('connection', json => {
-  console.log(json);
   let p = players[json.id] = {
     x: json.pos.x,
     goalX: json.pos.x,
@@ -286,8 +285,8 @@ function renderGame() {
 
   for(let id in players) {
     let p = players[id];
-    p.x += (p.goalX - p.x) * delta * 10;
-    p.y += (p.goalY - p.y) * delta * 10;
+    p.x += (p.goalX + p.vel.x * delta - p.x) * delta * 10;
+    p.y += (p.goalY + p.vel.y * delta - p.y) * delta * 10;
     if(Math.hypot(p.vel.x, p.vel.y)) {
       p.frame += Math.hypot(p.vel.x, p.vel.y) / 20 * delta;
     } else {
