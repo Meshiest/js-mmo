@@ -11,8 +11,10 @@ let assets = {
 
 let loaded = false;
 
-export default {
-  assets,
+module.exports = {
+  getAssets() {
+    return assets;
+  },
   isLoaded() {
     return loaded;
   },

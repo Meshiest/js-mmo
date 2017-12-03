@@ -29,3 +29,7 @@ export default {
     readingKeys = true;
   },
 };
+
+module.exports = {
+  keys
+};

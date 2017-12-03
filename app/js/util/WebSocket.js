@@ -36,7 +36,7 @@ WebSocket.prototype.isOpen = function() {
   return this.readyState === WebSocket.OPEN;
 };
 
-export default {
+module.exports = {
   createWebSocket() {
     let ws = new WebSocket(location.href.replace(/^http/,'ws'));
     ws.onmessage = ws.handleMessage.bind(ws);

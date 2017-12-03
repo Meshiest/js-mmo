@@ -1,26 +1,22 @@
 import Entity from './Entity.js';
 import {
-  RENDER_DIST,
-  FADE_RANGE,
   PLAYER_SPEED,
+  KEYBINDS,
 } from './Config.js';
-import { drawAvatar, vecToDir, assets } from './Rendering.js';
+import { drawAvatar, vecToDir } from './Rendering.js';
+import { getAssets } from './Assets.js';
 import { keys } from './Input.js';
-import { world } from './World.js';
-
-const RENDER_RADIUS = RENDER_DIST / 2;
+import world from './World.js';
 
 export default class Player extends Entity {
-  constructor(id, pos, name, vel, dir) {
+  constructor(name, pos, vel, dir) {
     super('player', pos);
-    this.id = id;
     this.goal = pos;
     this.vel = vel;
     this.name = name;
     this.dir = dir;
     this.isPlayerControlled = false;
-
-    this.tilesheet = assets.avatars;
+    this.tilesheet = getAssets().avatars;
     this.avatarIndex = 6;
   }
 
@@ -43,16 +39,25 @@ export default class Player extends Entity {
     }
   }
 
+  getTransform() {
+    return {
+      pos: this.pos,
+      vel: this.vel,
+      dir: this.dir,
+    };
+  }
+
   controlTick(deltaTime) {
     let dir = {x: 0, y: 0};
 
-    if(keys.KeyW)
+    if(keys[KEYBINDS.PLAYER_UP])
       dir.y -= 1;
-    if(keys.KeyS)
+    if(keys[KEYBINDS.PLAYER_DOWN])
       dir.y += 1;
-    if(keys.KeyA)
+
+    if(keys[KEYBINDS.PLAYER_LEFT])
       dir.x -= 1;
-    if(keys.KeyD)
+    if(keys[KEYBINDS.PLAYER_RIGHT])
       dir.x += 1;
 
     if(Math.hypot(dir.x, dir.y) > 0) {
@@ -61,7 +66,7 @@ export default class Player extends Entity {
         x: Math.cos(theta - world.rotation),
         y: Math.sin(theta - world.rotation),
       };
-      this.lastDir = dir;
+      this.dir = dir;
 
       this.vel.x = dir.x * PLAYER_SPEED;
       this.vel.y = dir.y * PLAYER_SPEED;
@@ -69,7 +74,18 @@ export default class Player extends Entity {
       this.pos.x += this.vel.x * deltaTime;
       this.pos.y += this.vel.y * deltaTime;
 
-      // TODO Emit new transform
+      // Shift the world so it follows the player
+      world.offset.x += Math.cos(theta) * PLAYER_SPEED * deltaTime;
+      world.offset.y += Math.sin(theta) * world.tilt * PLAYER_SPEED * deltaTime;
+
+      world.socket.emit('transform', this.getTransform());
+    } else {
+      // Emit transform after a player stops moving
+      if(Math.hypot(this.vel.x, this.vel.y) > 0) {
+        world.socket.emit('transform', this.getTransform());
+      }
+      this.vel.x = 0;
+      this.vel.y = 0;
     }
   }
 
@@ -83,38 +99,22 @@ export default class Player extends Entity {
   render(ctx) {
     let { x, y } = this.pos;
 
-    x -= world.offset.x;
-    y -= world.offset.y;
+    x -= world.controlEntity.pos.x;
+    y -= world.controlEntity.pos.y;
 
     let hypot = Math.hypot(x, y);
     let theta = Math.atan2(y, x) + world.rotation;
 
-    // Cull anything not in the rendering range
-    if((Math.abs(x) > RENDER_RADIUS ||
-        Math.abs(y) > RENDER_RADIUS))
-      return;
-
-    ctx.save();
-
-    // Fade when close to edge of render distance
-    if(Math.abs(x) > RENDER_RADIUS - FADE_RANGE ||
-        Math.abs(y) > RENDER_RADIUS - FADE_RANGE) {
-      ctx.globalAlpha = Math.min(
-        Math.abs(RENDER_RADIUS - Math.abs(x)) / FADE_RANGE,
-        Math.abs(RENDER_RADIUS - Math.abs(y)) / FADE_RANGE);
-    } else {
-      ctx.globalAlpha = 1;
-    }
-
     x = Math.cos(theta) * hypot;
     y = Math.sin(theta) * hypot * world.tilt;
+
 
     // Render Player
     drawAvatar(ctx,
       this.tilesheet,
       this.avatarIndex,
       Math.floor(this.frame),
-      vecToDir(this.lastDir, world.rotation),
+      vecToDir(this.dir, world.rotation),
       x, y);
 
     ctx.font = 'small-caps bold 13px helvetica';
@@ -127,7 +127,5 @@ export default class Player extends Entity {
     // Render Username
     ctx.strokeText(this.name, x, y - 48);
     ctx.fillText(this.name, x, y - 48);
-
-    ctx.restore();
   }
 }

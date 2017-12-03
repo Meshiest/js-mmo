@@ -34,6 +34,6 @@ function vecToDir(dir, deg) {
   return sin < 0 ? 3 : 0;
 }
 
-export default {
+module.exports = {
   drawTile, drawAvatar, vecToDir
 };
