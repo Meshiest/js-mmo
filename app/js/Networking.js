@@ -1,7 +1,6 @@
 import { createWebSocket } from './util/WebSocket.js';
 import world from './World.js';
 import Player from './Player.js';
-console.log('foo');
 
 let clients = {};
 
@@ -23,7 +22,6 @@ module.exports = {
   connect() {
     return new Promise(resolve => {
       ws = createWebSocket();
-      console.log('Created ws');
       ws.onopen = () => {
         ws.emit('name', {name: world.controlEntity.name});
         resolve(ws);

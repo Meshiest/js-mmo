@@ -34,7 +34,12 @@ export default class Player extends Entity {
     // Increment frame for walking animations
     if(Math.hypot(this.vel.x, this.vel.y) > 0) {
       this.frame += Math.hypot(this.vel.x, this.vel.y) / 20 * deltaTime;
+      if(this.isPlayerControlled)
+        world.socket.emit('transform', this.getTransform());
     } else {
+      if(this.frame !== 0 && this.isPlayerControlled) {
+        world.socket.emit('transform', this.getTransform());
+      }
       this.frame = 0;
     }
   }
@@ -77,13 +82,7 @@ export default class Player extends Entity {
       // Shift the world so it follows the player
       world.offset.x += Math.cos(theta) * PLAYER_SPEED * deltaTime;
       world.offset.y += Math.sin(theta) * world.tilt * PLAYER_SPEED * deltaTime;
-
-      world.socket.emit('transform', this.getTransform());
     } else {
-      // Emit transform after a player stops moving
-      if(Math.hypot(this.vel.x, this.vel.y) > 0) {
-        world.socket.emit('transform', this.getTransform());
-      }
       this.vel.x = 0;
       this.vel.y = 0;
     }

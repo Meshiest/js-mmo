@@ -34,7 +34,7 @@ wss.on('connection', ws => {
     pos: {x: 0, y: 0},
     vel: {x: 0, y: 0},
     name: 'Player',
-    lastDir: {x: 0, y: 1},
+    dir: {x: 0, y: 1},
   };
   ws.player = player;
   ws.id = id;
@@ -44,7 +44,7 @@ wss.on('connection', ws => {
     pos: player.pos,
     vel: player.vel,
     name: player.name,
-    lastDir: player.lastDir,
+    dir: player.dir,
   });
   wss.clients.forEach((i, e) => {
     if(ws !== e) {
@@ -54,7 +54,7 @@ wss.on('connection', ws => {
         name: p.name,
         pos: p.pos,
         vel: p.vel,
-        lastDir: p.lastDir,
+        dir: p.dir,
       });
     }
   });
@@ -70,11 +70,11 @@ wss.on('connection', ws => {
 
       switch(type) {
       case 'transform':
-        let { pos, vel, lastDir } = json;
+        let { pos, vel, dir } = json;
         json.id = id;
         player.pos = pos;
         player.vel = vel;
-        player.lastDir = lastDir;
+        player.dir = dir;
         ws.$broadcast('transform', json);
         break;
 
