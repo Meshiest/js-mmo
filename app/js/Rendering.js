@@ -10,12 +10,16 @@ function drawTile(ctx, tileset, tile, width, height, x, y) {
 
 const tileSize = 32;
 const partSize = 16;
+
 /*
   012
-  7 3
+  7 3 -> each index will be 1 for a neighbor of the same type
   654
-*/
 
+  This will create a bit mask (255 for being completely surrounded)
+  The autoTileMap has an index mask and a value consisting of
+    four indecies for the tile corners [nw, ne, sw, se]
+*/
 let autoTileMap = [
   [0, 1, 4, 5], [10, 11, 22, 23], [0, 1, 4, 5],
   [10, 11, 22, 23], [8, 11, 12, 15], [10, 11, 6, 15],

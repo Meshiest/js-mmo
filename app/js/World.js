@@ -45,12 +45,12 @@ let world = new (class World extends GameObject {
     let tiles = [0, 0, 4, 6, 48];
     let grid = {};
     let sample = () => tiles[Math.floor(Math.random() * tiles.length)];
-    let add = [[-1, -1], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0]];
+    let add = [[-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1]];
     let edge = (i, j) => {
       let cell = grid[[i, j]];
       let sum = 0;
-      for(let k = 0; k < 8; k++)
-        sum += (cell === grid[[add[k][0]+i, add[k][1]+j]] ? 1 : 0) << (7 - k);
+      add.forEach((a, k) =>
+        sum += (cell === grid[[a[0]+i, a[1]+j]] ? 1 : 0) << k);
       return sum;
     };
     for(let i = 0; i < MAP_SIZE / 32; i++)
