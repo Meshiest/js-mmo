@@ -8,6 +8,7 @@ module.exports = {
     WORLD_ROTATE_CCW: 'KeyQ',
     WORLD_TILT_UP: 'KeyX',
     WORLD_TILT_DOWN: 'KeyZ',
+    WORLD_RESET_PERSPECTIVE: 'KeyR',
     PLAYER_UP: 'KeyW',
     PLAYER_DOWN: 'KeyS',
     PLAYER_LEFT: 'KeyA',

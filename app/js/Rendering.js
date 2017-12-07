@@ -1,9 +1,9 @@
 function drawTile(ctx, tileset, tile, width, height, x, y) {
   ctx.drawImage(
     tileset,
-    (tile * width) % (tileset.width),
-    Math.floor(tile / (tileset.width / width)) * height % tileset.height,
-    width, height,
+    (tile * width) % (tileset.width) + 0.5,
+    Math.floor(tile / (tileset.width / width)) * height % tileset.height + 0.5,
+    width - 1, height - 1,
     x, y,
     width, height);
 }

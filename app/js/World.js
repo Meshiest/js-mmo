@@ -22,6 +22,17 @@ let world = new (class World extends GameObject {
       y: 0,
     };
 
+    window.addEventListener('blur', () => {
+      this.offset.x = this.offset.y = 0;
+    });
+
+    window.addEventListener('keydown', event => {
+      if(event.code === KEYBINDS.WORLD_RESET_PERSPECTIVE) {
+        this.rotation = Math.PI / 4;
+        this.tilt = 0.5;
+      }
+    });
+
     this.entities = [];
 
     this.map = document.createElement('canvas');
@@ -52,17 +63,17 @@ let world = new (class World extends GameObject {
   }
 
   tick(deltaTime) {
-    if(keys[KEYBINDS.WORLD_TILT_DOWN])
+    if(keys[KEYBINDS.WORLD_TILT_DOWN] && !keys[KEYBINDS.WORLD_RESET_PERSPECTIVE])
       this.tilt -= 2 * deltaTime;
-    if(keys[KEYBINDS.WORLD_TILT_UP])
+    if(keys[KEYBINDS.WORLD_TILT_UP] && !keys[KEYBINDS.WORLD_RESET_PERSPECTIVE])
       this.tilt += 2 * deltaTime;
 
-    this.tilt = Math.min(Math.max(this.tilt, 0.4), 0.6);
+    this.tilt = Math.min(Math.max(this.tilt, 0.3), 0.7);
 
     // Keybinds for rotating world
-    if(keys[KEYBINDS.WORLD_ROTATE_CCW])
+    if(keys[KEYBINDS.WORLD_ROTATE_CCW] && !keys[KEYBINDS.WORLD_RESET_PERSPECTIVE])
       this.rotation += deltaTime * Math.PI / 2;
-    if(keys[KEYBINDS.WORLD_ROTATE_CW])
+    if(keys[KEYBINDS.WORLD_ROTATE_CW] && !keys[KEYBINDS.WORLD_RESET_PERSPECTIVE])
       this.rotation -= deltaTime * Math.PI / 2;
 
     /// Smooth translate world to center at player
