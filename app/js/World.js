@@ -90,15 +90,15 @@ let world = new (class World extends GameObject {
 
     ctx.save();
 
-    sort(this.entities)
-    .asc(e => e.getOrder())
-    .forEach(e => {
+    this.entities = sort(this.entities)
+    .asc(e => e.getOrder());
+    for(let e in this.entities) {
       let posX = e.pos.x - controlPos.x;
       let posY = e.pos.y - controlPos.y;
       // Cull anything not in the rendering range
       if((Math.abs(posX) > RENDER_RADIUS ||
         Math.abs(posY) > RENDER_RADIUS))
-        return;
+        continue;
 
       ctx.save();
 
@@ -115,7 +115,7 @@ let world = new (class World extends GameObject {
       e.render(ctx);
 
       ctx.restore();
-    });
+    }
 
     ctx.restore();
   }
