@@ -1,7 +1,8 @@
 import { keys } from './Input.js';
 import GameObject from './GameObject.js';
+import sort from 'fast-sort';
 import { getAssets } from './Assets.js';
-import { drawTile } from './Rendering.js';
+import { autoTile } from './Rendering.js';
 import {
   KEYBINDS,
   RENDER_DIST,
@@ -30,11 +31,24 @@ let world = new (class World extends GameObject {
   }
 
   gen() {
-    let tiles = [0, 0, 0, 4, 6, 48];
+    let tiles = [0, 0, 4, 6, 48];
+    let grid = {};
     let sample = () => tiles[Math.floor(Math.random() * tiles.length)];
+    let add = [[-1, -1], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0]];
+    let edge = (i, j) => {
+      let cell = grid[[i, j]];
+      let sum = 0;
+      for(let k = 0; k < 8; k++)
+        sum += (cell === grid[[add[k][0]+i, add[k][1]+j]] ? 1 : 0) << (7 - k);
+      return sum;
+    };
     for(let i = 0; i < MAP_SIZE / 32; i++)
       for(let j = 0; j < MAP_SIZE / 32; j++)
-        drawTile(this.mapCtx, getAssets().tileset, sample(), 32, 32, i * 32, j * 32);
+        grid[[i, j]] = sample();
+    for(let i = 0; i < MAP_SIZE / 32; i++)
+      for(let j = 0; j < MAP_SIZE / 32; j++) {
+        autoTile(this.mapCtx, getAssets().groundedges, grid[[i, j]], edge(i, j), i * 32, j * 32);
+      }
   }
 
   tick(deltaTime) {
@@ -55,7 +69,8 @@ let world = new (class World extends GameObject {
     this.offset.x -= this.offset.x * deltaTime * 4;
     this.offset.y -= this.offset.y * deltaTime * 4;
 
-    this.entities.forEach(e => e.tick(deltaTime));
+    for(let i in this.entities)
+      this.entities[i].tick(deltaTime);
   }
 
   render(ctx) {
@@ -75,12 +90,9 @@ let world = new (class World extends GameObject {
 
     ctx.save();
 
-    this.entities.map(e => {
-      e.__order = e.getOrder();
-      return e;
-    }).sort((a, b) =>
-      a.__order - b.__order // TODO Use an even faster sort
-    ).forEach(e => {
+    sort(this.entities)
+    .asc(e => e.getOrder())
+    .forEach(e => {
       let posX = e.pos.x - controlPos.x;
       let posY = e.pos.y - controlPos.y;
       // Cull anything not in the rendering range

@@ -18,6 +18,7 @@
     "babel-preset-latest": "^6.24.1",
     "brunch": "^2.10.12",
     "express": "^4.16.2",
+    "fast-sort": "^1.2.5",
     "postcss-brunch": "^2.1.0",
     "ws": "^3.3.2"
   }

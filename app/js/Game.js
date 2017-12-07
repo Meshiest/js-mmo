@@ -2,6 +2,8 @@ import { load } from './Assets.js';
 import world from './World.js';
 import { connect } from './Networking.js';
 import Player from './Player.js';
+import Tree from './Tree.js';
+import { MAP_SIZE } from './Config.js';
 
 import './Input.js';
 
@@ -52,6 +54,10 @@ window.addEventListener('load', () => {
     ));
     world.controlEntity.setPlayerControlled(true);
     world.gen();
+    for(let i = 0; i < MAP_SIZE / 32; i++)
+      for(let j = 0; j < MAP_SIZE / 32; j++)
+        if(Math.random() < 0.05)
+          world.entities.push(new Tree({x: i * 32 + 16, y: j * 32 + 16}));
     connect().then(socket => {
       world.socket = socket;
       renderGame();

@@ -8,6 +8,7 @@ import { getAssets } from './Assets.js';
 import { keys } from './Input.js';
 import world from './World.js';
 
+
 export default class Player extends Entity {
   constructor(name, pos, vel, dir) {
     super('player', pos);
@@ -52,6 +53,7 @@ export default class Player extends Entity {
     };
   }
 
+  // Tick for the controlling player
   controlTick(deltaTime) {
     let dir = {x: 0, y: 0};
 
@@ -96,17 +98,7 @@ export default class Player extends Entity {
   }
 
   render(ctx) {
-    let { x, y } = this.pos;
-
-    x -= world.controlEntity.pos.x;
-    y -= world.controlEntity.pos.y;
-
-    let hypot = Math.hypot(x, y);
-    let theta = Math.atan2(y, x) + world.rotation;
-
-    x = Math.cos(theta) * hypot;
-    y = Math.sin(theta) * hypot * world.tilt;
-
+    let { x, y } = this.getScreenPos();
 
     // Render Player
     drawAvatar(ctx,

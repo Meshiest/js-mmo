@@ -3,6 +3,7 @@ module.exports = {
     javascripts: {
       joinTo: {
         'bundle.js': /^app\//,
+        'vendor.js': /^node_modules\//,
       },
     },
     stylesheets: {

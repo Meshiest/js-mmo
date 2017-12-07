@@ -13,11 +13,11 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + 'public/index.html');
 });
 
-WebSocket.prototype.$emit = function(type, json) {
+WebSocket.prototype.$emit = function (type, json) {
   this.send(JSON.stringify({type, json}));
 };
 
-WebSocket.prototype.$broadcast = function(type, json) {
+WebSocket.prototype.$broadcast = function (type, json) {
   wss.clients.forEach((i, c) => {
     if(c !== this) {
       c.$emit(type, json);
