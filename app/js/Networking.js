@@ -22,6 +22,7 @@ module.exports = {
   connect() {
     return new Promise(resolve => {
       ws = createWebSocket();
+      window.addEventListener('unload', () => ws.close());
       ws.onopen = () => {
         ws.emit('name', {name: world.controlEntity.name});
         resolve(ws);
@@ -43,8 +44,7 @@ module.exports = {
       });
 
       ws.on('disconnection', ({id}) => {
-        let index = world.entities.indexOf(clients[id]);
-
+        let index = world.entities.indexOf(clients[id].player);
         if(index >= -1)
           world.entities.splice(index, 1);
 

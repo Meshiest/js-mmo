@@ -92,7 +92,8 @@ let world = new (class World extends GameObject {
 
     this.entities = sort(this.entities)
     .asc(e => e.getOrder());
-    for(let e in this.entities) {
+    for(let i in this.entities) {
+      let e = this.entities[i];
       let posX = e.pos.x - controlPos.x;
       let posY = e.pos.y - controlPos.y;
       // Cull anything not in the rendering range

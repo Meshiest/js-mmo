@@ -5,6 +5,7 @@ body, html, canvas, div, h2 {
 
 body, html, canvas {
   display: flex;
+  image-rendering: pixelated;
 }
 
 canvas {
