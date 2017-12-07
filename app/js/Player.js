@@ -1,7 +1,9 @@
 import Entity from './Entity.js';
+import Tree from './Tree.js';
 import {
   PLAYER_SPEED,
   KEYBINDS,
+  TILE_DIST,
 } from './Config.js';
 import { drawAvatar, vecToDir } from './Rendering.js';
 import { getAssets } from './Assets.js';
@@ -19,9 +21,15 @@ export default class Player extends Entity {
     this.isPlayerControlled = false;
     this.tilesheet = getAssets().avatars;
     this.avatarIndex = 6;
+
+    this.lastPos = {
+      x: pos.x,
+      y: pos.y,
+    };
   }
 
   setPlayerControlled(isPlayerControlled) {
+    this.genAround();
     this.isPlayerControlled = isPlayerControlled;
   }
 
@@ -88,6 +96,14 @@ export default class Player extends Entity {
       this.vel.x = 0;
       this.vel.y = 0;
     }
+
+    if(Math.hypot(this.lastPos.x - this.pos.x, this.lastPos.y - this.pos.y) > 48) {
+      // To be removed with requesting from the network
+      this.genAround();
+
+      this.lastPos.x = this.pos.x;
+      this.lastPos.y = this.pos.y;
+    }
   }
 
   clientTick(deltaTime) {
@@ -95,6 +111,32 @@ export default class Player extends Entity {
     // This will make networking look less laggy
     this.pos.x += (this.goal.x - this.pos.x) * deltaTime * 10;
     this.pos.y += (this.goal.y - this.pos.y) * deltaTime * 10;
+  }
+
+  genAround() {
+    let { x, y } = this.pos;
+    x = Math.floor(x/32);
+    y = Math.floor(y/32);
+
+    let tiles = [0, 0, 4, 6, 48];
+    let sample = () => tiles[Math.floor(Math.random() * tiles.length)];
+    let list = [];
+
+    for(let i = -TILE_DIST; i < TILE_DIST; i++)
+      for(let j = -TILE_DIST; j < TILE_DIST; j++) {
+        let tx = i + x, ty = j + y;
+
+        if(typeof world.mapGrid[[tx, ty]] === 'undefined') {
+          list.push({x: tx, y: ty, t: sample()});
+          if(Math.random() < 0.05)
+            world.entities.push(new Tree({
+              x: tx * 32 + 16,
+              y: ty * 32 + 16
+            }));
+        }
+      }
+
+    world.setTiles(list);
   }
 
   render(ctx) {

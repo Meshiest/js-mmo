@@ -12,6 +12,8 @@ import {
 
 const RENDER_RADIUS = RENDER_DIST/2;
 
+const ADJACENT = [[-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1]];
+
 let world = new (class World extends GameObject {
   constructor() {
     super();
@@ -36,30 +38,38 @@ let world = new (class World extends GameObject {
     this.entities = [];
 
     this.map = document.createElement('canvas');
+    this.mapGrid = {};
     this.mapCtx = this.map.getContext('2d');
     this.mapCtx.canvas.width = MAP_SIZE;
     this.mapCtx.canvas.height = MAP_SIZE;
   }
 
-  gen() {
-    let tiles = [0, 0, 4, 6, 48];
-    let grid = {};
-    let sample = () => tiles[Math.floor(Math.random() * tiles.length)];
-    let add = [[-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1]];
-    let edge = (i, j) => {
-      let cell = grid[[i, j]];
-      let sum = 0;
-      add.forEach((a, k) =>
-        sum += (cell === grid[[a[0]+i, a[1]+j]] ? 1 : 0) << k);
-      return sum;
-    };
-    for(let i = 0; i < MAP_SIZE / 32; i++)
-      for(let j = 0; j < MAP_SIZE / 32; j++)
-        grid[[i, j]] = sample();
-    for(let i = 0; i < MAP_SIZE / 32; i++)
-      for(let j = 0; j < MAP_SIZE / 32; j++) {
-        autoTile(this.mapCtx, getAssets().groundedges, grid[[i, j]], edge(i, j), i * 32, j * 32);
+  setTiles(list) {
+    let near = {};
+    for(let i = 0; i < list.length; i++) {
+      let { x, y, t } = list[i];
+      this.mapGrid[[x,y]] = t;
+      near[[x, y]] = [x, y];
+
+      for(let j = 0; j < 8; j++) {
+        let key = [ADJACENT[j][0] + x, ADJACENT[j][1] + y];
+        near[key] = key;
       }
+    }
+
+    for(let k in near) {
+      this.adjustTile(...near[k]);
+    }
+  }
+
+  adjustTile(x, y) {
+    let cell = this.mapGrid[[x, y]];
+
+    let edge = 0;
+    for(let i = 0; i < 8; i++)
+      edge += (cell === this.mapGrid[[ADJACENT[i][0]+x, ADJACENT[i][1]+y]] ? 1 : 0) << i;
+
+    autoTile(this.mapCtx, getAssets().groundedges, cell, edge, x * 32, y * 32);
   }
 
   tick(deltaTime) {

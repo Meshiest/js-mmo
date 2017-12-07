@@ -28,12 +28,22 @@ module.exports = {
         resolve(ws);
       };
 
+      // Assign player goal position
       ws.on('transform', ({id, pos, vel, dir}) => {
         clients[id].player.goal = pos;
         clients[id].player.vel = vel;
         clients[id].player.dir = dir;
       });
 
+      // Force player position
+      ws.on('transport', ({id, pos, vel, dir}) => {
+        clients[id].player.goal = pos;
+        clients[id].player.pos = pos;
+        clients[id].player.vel = vel;
+        clients[id].player.dir = dir;
+      });
+
+      // Update player name
       ws.on('name', ({id, name}) => {
         clients[id].player.name = name;
       });

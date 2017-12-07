@@ -1,5 +1,6 @@
 module.exports = {
   RENDER_DIST: 600,
+  TILE_DIST: 6,
   FADE_RANGE: 20,
   PLAYER_SPEED: 200,
   MAP_SIZE: 100 * 32,
