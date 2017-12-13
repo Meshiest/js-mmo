@@ -2,7 +2,6 @@ import { load } from './Assets.js';
 import world from './World.js';
 import { connect } from './Networking.js';
 import Player from './Player.js';
-import { MAP_SIZE } from './Config.js';
 
 import './Input.js';
 
@@ -47,7 +46,7 @@ window.addEventListener('load', () => {
   load().then(() => {
     world.entities.push(world.controlEntity = new Player(
       location.search ? location.search.slice(1) : 'Player',
-      {x: MAP_SIZE/2, y: MAP_SIZE/2},
+      {x: 0, y: 0},
       {x: 0, y: 0},
       {x: 0, y: 1},
     ));

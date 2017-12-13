@@ -1,9 +1,9 @@
 module.exports = {
   RENDER_DIST: 600,
-  TILE_DIST: 6,
+  TILE_DIST: 12,
   FADE_RANGE: 20,
   PLAYER_SPEED: 200,
-  MAP_SIZE: 100 * 32,
+  MAP_SIZE: 20,
   KEYBINDS: {
     WORLD_ROTATE_CW: 'KeyE',
     WORLD_ROTATE_CCW: 'KeyQ',
@@ -14,5 +14,8 @@ module.exports = {
     PLAYER_DOWN: 'KeyS',
     PLAYER_LEFT: 'KeyA',
     PLAYER_RIGHT: 'KeyD',
-  }
+  },
+  DEBUG: {
+    CHUNK: false,
+  },
 };

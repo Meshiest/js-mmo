@@ -8,6 +8,7 @@ import {
   RENDER_DIST,
   MAP_SIZE,
   FADE_RANGE,
+  DEBUG
 } from './Config.js';
 
 const RENDER_RADIUS = RENDER_DIST/2;
@@ -35,15 +36,44 @@ let world = new (class World extends GameObject {
       }
     });
 
+    this.canvas = document.createElement('canvas');
+    this.ctx = this.canvas.getContext('2d');
+    this.ctx.canvas.height = this.ctx.canvas.width = RENDER_DIST;
+
     this.entities = [];
 
-    this.map = document.createElement('canvas');
+    this.maps = {};
     this.mapGrid = {};
-    this.mapCtx = this.map.getContext('2d');
-    this.mapCtx.canvas.width = MAP_SIZE;
-    this.mapCtx.canvas.height = MAP_SIZE;
   }
 
+  // Returns an existing canvas ctx pair or creates a new one
+  getMap(x, y, grid) {
+    let pos;
+    if(!grid)
+      pos = [Math.floor(x / MAP_SIZE), Math.floor(y / MAP_SIZE)];
+    else
+      pos = [x, y];
+
+    if(this.maps[pos])
+      return this.maps[pos];
+
+    let canvas = document.createElement('canvas');
+    let ctx = canvas.getContext('2d');
+
+    this.maps[pos] = {
+      canvas, ctx
+    };
+
+    ctx.canvas.width = MAP_SIZE * 32;
+    ctx.canvas.height = MAP_SIZE * 32;
+
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, MAP_SIZE * 32, MAP_SIZE * 32);
+
+    return this.maps[pos];
+  }
+
+  // Assign a set of tiles to the map, autotiles neighboring tiles
   setTiles(list) {
     let near = {};
     for(let i = 0; i < list.length; i++) {
@@ -62,6 +92,7 @@ let world = new (class World extends GameObject {
     }
   }
 
+  // Runs the autotile code
   adjustTile(x, y) {
     let cell = this.mapGrid[[x, y]];
 
@@ -69,7 +100,13 @@ let world = new (class World extends GameObject {
     for(let i = 0; i < 8; i++)
       edge += (cell === this.mapGrid[[ADJACENT[i][0]+x, ADJACENT[i][1]+y]] ? 1 : 0) << i;
 
-    autoTile(this.mapCtx, getAssets().groundedges, cell, edge, x * 32, y * 32);
+    autoTile(this.getMap(x, y).ctx,
+      getAssets().groundedges,
+      cell,
+      edge,
+      x * 32 - Math.floor(x / MAP_SIZE) * MAP_SIZE * 32,
+      y * 32 - Math.floor(y / MAP_SIZE) * MAP_SIZE * 32
+    );
   }
 
   tick(deltaTime) {
@@ -94,16 +131,56 @@ let world = new (class World extends GameObject {
       this.entities[i].tick(deltaTime);
   }
 
+  renderMap(x, y) {
+    // let map = this.getMap(x, y);
+    // let canvas = map.canvas;
+    let xGrid = Math.round(x / 32 / MAP_SIZE);
+    let yGrid = Math.round(y / 32 / MAP_SIZE);
+
+    // drawImage(image, imgX, imgY, imgW, imgH, x, y, w, h)
+    this.ctx.save();
+    this.ctx.translate(-x + RENDER_RADIUS, -y + RENDER_RADIUS);
+
+    [[0, 0], [-1, 0], [0, -1], [-1, -1]].forEach(p => {
+      let map = this.getMap(xGrid + p[0], yGrid + p[1], 1);
+      this.ctx.drawImage(map.canvas,
+        (xGrid + p[0]) * 32 * MAP_SIZE,
+        (yGrid + p[1]) * 32 * MAP_SIZE);
+
+      if(DEBUG.CHUNK) {
+        this.ctx.lineWidth = 4;
+        this.ctx.strokeStyle = '#fff';
+        this.ctx.fillStyle = '#fff';
+        this.ctx.font = '30px arial';
+        this.ctx.textBaseline = 'top';
+        this.ctx.fillText(
+          `${xGrid + p[0]}, ${yGrid + p[1]}`,
+          (xGrid + p[0]) * 32 * MAP_SIZE + 20,
+          (yGrid + p[1]) * 32 * MAP_SIZE + 20);
+        this.ctx.strokeRect(
+          (xGrid + p[0]) * 32 * MAP_SIZE + 8,
+          (yGrid + p[1]) * 32 * MAP_SIZE + 8,
+          32 * MAP_SIZE -16,
+          32 * MAP_SIZE -16);
+      }
+    });
+
+    this.ctx.restore();
+
+  }
+
   render(ctx) {
     ctx.translate(this.offset.x, this.offset.y);
     let controlPos = this.controlEntity.pos;
+
+    this.renderMap(controlPos.x, controlPos.y);
 
     ctx.save();
     ctx.scale(1, world.tilt);
     ctx.rotate(world.rotation);
     ctx.fillRect(-RENDER_RADIUS-2, -RENDER_RADIUS-2, RENDER_DIST+4, RENDER_DIST+4);
-    ctx.drawImage(this.map,
-      controlPos.x-RENDER_RADIUS, controlPos.y-RENDER_RADIUS,
+    ctx.drawImage(this.canvas,
+      0, 0,
       RENDER_DIST, RENDER_DIST,
       -RENDER_RADIUS, -RENDER_RADIUS,
       RENDER_DIST, RENDER_DIST);
